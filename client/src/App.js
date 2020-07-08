@@ -13,7 +13,10 @@ class App extends Component {
     }
     this.state = {
       loggedIn: token ? true : false,
-      topTracks: []
+      topTracks: [],
+      topArtists: [],
+      topGenres: [],
+      user_id: ""
     }
   }
 
@@ -29,11 +32,24 @@ class App extends Component {
     return hashParams;
   }
 
-  getTopTracks() {
+  getTops() {
+    spot.getMe()
+      .then((user) => {
+        this.setState({
+          user_id: user.id
+        });
+      })
     spot.getMyTopTracks()
       .then((response) => {
         this.setState({
           topTracks: response.items
+        });
+      })
+    console.log(this.state)
+    spot.getMyTopArtists()
+      .then((response) => {
+        this.setState({
+          topArtists: response.items
         });
       })
     console.log(this.state)
@@ -48,12 +64,15 @@ class App extends Component {
     return ret.join("\n");
   }
 
-  renderTableData() {
+  renderTracksTableData() {
+    var rank = 0;
     return this.state.topTracks.map((track) => {
        const name = track.name;
        const artists = track.artists.map((x) => x.name).join(", ");
+       rank++
        return (
           <tr key={name}>
+             <td>{rank}</td>
              <td>{name}</td>
              <td>{artists}</td>
           </tr>
@@ -61,23 +80,59 @@ class App extends Component {
     })
   }
 
-  renderTableHeader() {
+  renderTracksTableHeader() {
     // let header = Object.keys(this.state.topTracks[0]);
-    let header = ["Name", "Artist(s)"];
+    let header = ["Rank", "Name", "Artist(s)"];
     return header.map((key) => {
        return <th key={key}>{key.toUpperCase()}</th>
     })
   }
 
   renderTrackTable() {
-    this.getTopTracks();
+    this.getTops();
     return (
       <div>
          <h1 id='title'>Top Tracks</h1>
          <table id='tracks'>
             <tbody>
-               <tr> {this.renderTableHeader()} </tr>
-               {this.renderTableData()}
+               <tr> {this.renderTracksTableHeader()} </tr>
+               {this.renderTracksTableData()}
+            </tbody>
+         </table>
+      </div>
+   )
+  }
+
+  renderArtistsTableData() {
+    var rank = 0;
+    return this.state.topArtists.map((artist) => {
+       const name = artist.name;
+       rank++
+       return (
+          <tr key={name}>
+             <td>{rank}</td>
+             <td>{name}</td>
+          </tr>
+       )
+    })
+  }
+
+  renderArtistsTableHeader() {
+    let header = ["Rank", "Name"];
+    return header.map((key) => {
+       return <th key={key}>{key.toUpperCase()}</th>
+    })
+  }
+
+  renderArtistTable() {
+    // this.getTops();
+    return (
+      <div>
+         <h1 id='title'>Artists</h1>
+         <table id='tracks'>
+            <tbody>
+               <tr> {this.renderArtistsTableHeader()} </tr>
+               {this.renderArtistsTableData()}
             </tbody>
          </table>
       </div>
@@ -96,6 +151,13 @@ class App extends Component {
           { this.state.loggedIn &&
             <div>
               { this.renderTrackTable() }
+            </div>
+          }
+        </div>
+        <div>
+          { this.state.loggedIn &&
+            <div>
+              { this.renderArtistTable() }
             </div>
           }
         </div>
