@@ -15,7 +15,6 @@ class App extends Component {
       loggedIn: token ? true : false,
       topTracks: [],
       topArtists: [],
-      topGenres: [],
       user_id: ""
     }
   }
@@ -39,29 +38,26 @@ class App extends Component {
           user_id: user.id
         });
       })
-    spot.getMyTopTracks()
+    spot.getMyTopTracks({
+      limit: 50,
+      time_range: "short_term"
+    })
       .then((response) => {
         this.setState({
           topTracks: response.items
         });
       })
     console.log(this.state)
-    spot.getMyTopArtists()
+    spot.getMyTopArtists({
+      limit: 50,
+      time_range: "short_term"
+    })
       .then((response) => {
         this.setState({
           topArtists: response.items
         });
       })
     console.log(this.state)
-  }
-
-  namesOfTopTracks() {
-    if (this.state.topTracks.length === 0) {
-      this.getTopTracks();
-    }
-    var ret = [];
-    this.state.topTracks.forEach(t => ret.push(t.name));
-    return ret.join("\n");
   }
 
   renderTracksTableData() {
