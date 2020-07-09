@@ -63,22 +63,24 @@ class App extends Component {
   renderTracksTableData() {
     var rank = 0;
     return this.state.topTracks.map((track) => {
+       rank++;
        const name = track.name;
        const artists = track.artists.map((x) => x.name).join(", ");
-       rank++
+       const preview = track.preview_url;
        return (
           <tr key={name}>
              <td>{rank}</td>
              <td>{name}</td>
              <td>{artists}</td>
+             <td><a href={preview}> Click to listen </a></td>
           </tr>
        )
     })
   }
 
-  renderTracksTableHeader() {
+  renderTableHeader() {
     // let header = Object.keys(this.state.topTracks[0]);
-    let header = ["Rank", "Name", "Artist(s)"];
+    let header = ["Rank", "Name", "Artist(s)", "Preview"];
     return header.map((key) => {
        return <th key={key}>{key.toUpperCase()}</th>
     })
