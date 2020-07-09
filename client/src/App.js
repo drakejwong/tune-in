@@ -77,7 +77,7 @@ class App extends Component {
        )
     })
   }
-
+//TODO: get album art
   renderTableHeader() {
     // let header = Object.keys(this.state.topTracks[0]);
     let header = ["Rank", "Name", "Artist(s)", "Preview"];
