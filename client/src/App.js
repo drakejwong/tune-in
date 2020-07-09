@@ -52,18 +52,20 @@ class App extends Component {
     return this.state.topTracks.map((track) => {
        const name = track.name;
        const artists = track.artists.map((x) => x.name).join(", ");
+       const preview = track.preview_url;
        return (
           <tr key={name}>
              <td>{name}</td>
              <td>{artists}</td>
+             <td><a href={preview}> Click to listen </a></td>
           </tr>
        )
     })
   }
-
+//TODO: get album art
   renderTableHeader() {
     // let header = Object.keys(this.state.topTracks[0]);
-    let header = ["Name", "Artist(s)"];
+    let header = ["Name", "Artist(s)", "Preview"];
     return header.map((key) => {
        return <th key={key}>{key.toUpperCase()}</th>
     })
