@@ -141,6 +141,9 @@ class App extends Component {
     return (
       <div className="App">
         <div>
+          <p>Just checking: {window.token}</p>
+        </div>
+        <div>
           { !this.state.loggedIn &&
             <a href='http://localhost:8888' > Login to Spotify </a>
           }
