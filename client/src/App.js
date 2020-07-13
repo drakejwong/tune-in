@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import SpotifyWebApi from "spotify-web-api-js";
-import TopBar from './TopBar';
+import TopBar from './components/TopBar';
+import LoginButton from './components/loginButton';
 const spot = new SpotifyWebApi();
 
 class App extends Component {
@@ -142,12 +143,13 @@ class App extends Component {
     return (
       <div>
         <TopBar />
+
         <div className="App">
           <div>
             { !this.state.loggedIn &&
               <div>
                 <p>Do you even know a brother?</p>
-                <a href='http://localhost:8888' > Login to Spotify </a>
+                <a href='http://localhost:8888' > <LoginButton msg="Log In To Spotify Now"/> </a>
               </div>
             }
           </div>

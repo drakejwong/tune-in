@@ -4,20 +4,20 @@ import React from 'react';
 import {
     NavbarBrand,
     Navbar,
-    Button,
   } from "reactstrap";
+  
+import LoginButton from './loginButton';
+import '../styles/TopBar.css';
   
   class TopBar extends React.Component {
     render() {
       return (
         <>
-          <Navbar color-on-scroll="100" className="navbar-transparent" expand="lg">
+          <Navbar color-on-scroll="100" className="navbar-transparent tuneinnav" expand="lg">
             <NavbarBrand href="#" onClick={e => e.preventDefault()}>
                 <h3 id="content" style={{margin:0}}>TuneIn</h3>
             </NavbarBrand>
-            <Button className="btn-round ml-auto" color="success">
-                <i className="tim-icons icon-single-02" /> Sign In
-            </Button>
+            <LoginButton />
           </Navbar>
         </>
       );
