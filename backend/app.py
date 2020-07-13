@@ -2,25 +2,33 @@ from getUserTops import getTops
 from createPlaylist import generate
 from spot_auth import user_id
 from getRecs import recommendTracks
+# from algos import uri_conversion
 
-topTracks, topArtists = getTops('short_term')
+term = 'short_term'
 
-to_playlist = []
+topTracks, topArtists = getTops(term)
+s_tracks = []
+s_artists = []
 
-print("My Top Tracks")
+# print("My Top Tracks")
 for i, item in enumerate(topTracks):
-    # print(i+1, item['name'], '//', item['artists'][0]['name'])
+    print(i+1, item['name'], '//', item['artists'][0]['name'])
 
-    if i < 5:
-        to_playlist.append('spotify:track:' + item['id'])
+    if i < 2:
+        s_tracks.append('spotify:track:' + item['id'])
 
-# print("\nMy Top Artists")
-# for i, item in enumerate(topArtists):
-#     print(i+1, item['name'])
+# print()
+print("My Top Artists")
+for i, item in enumerate(topArtists):
+    print(i+1, item['name'])
+    if i < 3:
+        s_artists.append('spotify:artist:' + item['id'])
 
-results = recommendTracks(tracks=to_playlist)
-# for r in recs['tracks']:
+results = recommendTracks(tracks=s_tracks, artists=s_artists)
+# results = recommendTracks(tracks=to_playlist)
+# for r in results['tracks']:
 #     print("recommendation:", r['name'], "by", r['artists'][0]['name'])
-recs = [track['id'] for track in results['tracks']]
 
-recs_list = generate("API Playlist Recommendation Test", recs)
+if results:
+    recs = [track['id'] for track in results['tracks']]
+    recs_list = generate("API Playlist Test", recs)

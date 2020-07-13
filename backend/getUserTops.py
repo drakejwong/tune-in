@@ -8,6 +8,7 @@ from spot_auth import sp, user_id
 def getTops(term):
     # items returned are paging objects of Artists / Tracks, indexed into items -- "an array of (track or artist) objects"
     # https://developer.spotify.com/documentation/web-api/reference/personalization/get-users-top-artists-and-tracks/
+    # max is 50
     topTracks = sp.current_user_top_tracks(limit=50, time_range=term)['items']
     topArtists = sp.current_user_top_artists(limit=50, time_range=term)['items']
     return topTracks, topArtists
