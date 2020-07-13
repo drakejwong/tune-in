@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import SpotifyWebApi from "spotify-web-api-js";
+import TopBar from './TopBar';
 const spot = new SpotifyWebApi();
 
 class App extends Component {
@@ -139,25 +140,31 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
-        <div>
-          { !this.state.loggedIn &&
-            <a href='http://localhost:8888' > Login to Spotify </a>
-          }
-        </div>
-        <div>
-          { this.state.loggedIn &&
-            <div>
-              { this.renderTrackTable() }
-            </div>
-          }
-        </div>
-        <div>
-          { this.state.loggedIn &&
-            <div>
-              { this.renderArtistTable() }
-            </div>
-          }
+      <div>
+        <TopBar />
+        <div className="App">
+          <div>
+            { !this.state.loggedIn &&
+              <div>
+                <p>Do you even know a brother?</p>
+                <a href='http://localhost:8888' > Login to Spotify </a>
+              </div>
+            }
+          </div>
+          <div>
+            { this.state.loggedIn &&
+              <div>
+                { this.renderTrackTable() }
+              </div>
+            }
+          </div>
+          <div>
+            { this.state.loggedIn &&
+              <div>
+                { this.renderArtistTable() }
+              </div>
+            }
+          </div>
         </div>
       </div>
     );
