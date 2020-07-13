@@ -165,7 +165,7 @@ class App extends Component {
                   </Row>
                 </Container>
                 <br />
-                <a href='http://localhost:8888' > <LoginButton msg="Log In To Spotify Now, CMON!!!!"/> </a>
+                <LoginButton msg="Log In To Spotify Now, CMON!!!!"/>
               </div>
             }
           </div>

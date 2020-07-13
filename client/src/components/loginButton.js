@@ -4,6 +4,8 @@ import React from 'react';
 import {
     Button,
 } from "reactstrap";
+
+import { AUTH_LINK } from '../constants';
   
 class LoginButton extends React.Component {
 
@@ -15,10 +17,14 @@ class LoginButton extends React.Component {
         }
     }
 
+    doTheLogin() {
+        window.open(AUTH_LINK);
+    }
+
     render() {
         return (
         <>
-            <Button className="btn-round ml-auto" color="success">
+            <Button className="btn-round ml-auto" color="success" onClick={this.doTheLogin}>
                 <i className="tim-icons icon-single-02" /> {this.state.msg}
             </Button>
         </>
