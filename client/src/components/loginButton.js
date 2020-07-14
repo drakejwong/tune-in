@@ -24,7 +24,7 @@ class LoginButton extends React.Component {
     render() {
         return (
         <>
-            <Button className="btn-round ml-auto" color="success" onClick={this.doTheLogin}>
+            <Button className="btn-round ml-auto" color="success">
                 <i className="tim-icons icon-single-02" /> {this.state.msg}
             </Button>
         </>

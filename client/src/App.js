@@ -3,6 +3,7 @@ import './App.css';
 import SpotifyWebApi from "spotify-web-api-js";
 import TopBar from './components/TopBar';
 import LoginButton from './components/loginButton';
+import Info from './components/Info';
 
 import {
   Row,
@@ -165,11 +166,16 @@ class App extends Component {
                   </Row>
                 </Container>
                 <br />
-                <LoginButton msg="Log In To Spotify Now, CMON!!!!"/>
+                <a href='http://localhost:8888' > <LoginButton msg="Log In To Spotify Now, CMON!!!!"/> </a>
               </div>
             }
           </div>
           <div>
+            { this.state.loggedIn &&
+              <Info></Info>
+            }
+          </div>
+          {/* <div>
             { this.state.loggedIn &&
               <div>
                 { this.renderTrackTable() }
@@ -182,7 +188,7 @@ class App extends Component {
                 { this.renderArtistTable() }
               </div>
             }
-          </div>
+          </div> */}
         </div>
       </div>
     );
