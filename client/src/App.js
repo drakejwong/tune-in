@@ -15,7 +15,7 @@ const spot = new SpotifyWebApi();
 
 
 class App extends Component {
-  constructor(){
+  constructor() {
     super();
     const params = this.getHashParams();
     const token = params.access_token;
@@ -29,7 +29,13 @@ class App extends Component {
       user_id: ""
     }
   }
-
+/*
+TODO: validate login from flask token.
+first see if we can print the access token.
+  this would mean i can pass up from py auth module.
+  rn taking directly from url which is from the js auth's redirect.
+then validate login on frontend and offer the table dom.
+*/
   getHashParams() {
     var hashParams = {};
     var e, r = /([^&;=]+)=?([^&;]*)/g,

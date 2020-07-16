@@ -13,8 +13,8 @@ var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = ''; // Your client id
-var client_secret = ''; // Your secret
+var client_id = 'f0175fcbf5dc47c8a909e0a75b76d8c3'; // Your client id
+var client_secret = '08a915ee4ba545c89c5be5ccae464e9d'; // Your secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
@@ -104,7 +104,7 @@ app.get('/callback', function(req, res) {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('http://localhost:3000/#' +
+        res.redirect('http://localhost:5000/app/' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token
