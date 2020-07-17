@@ -11,8 +11,10 @@ def getGenreSeeds():
 #seed_genres - a list of genre names.
 #limit - min:1, max:100, default:20
 #Returns: recommendations response object with keys seeds and tracks with values recommendation seed objects and track objects (simplified)
-# def recommendTracks(tracks, artists=None, genres=None, lim=20):
-#     return sp.recommendations(seed_artists=artists, seed_genres=genres, seed_tracks=tracks, limit=lim)
+def recommendTracks(tracks, artists=None, genres=None, lim=20):
+    return sp.recommendations(seed_artists=artists, seed_genres=genres, seed_tracks=tracks, limit=lim)
 
-def recommendTracks(tracks):
-    return sp.recommendations(seed_tracks=tracks)
+# def recommendTracks(tracks):
+#     return sp.recommendations(seed_tracks=tracks)
+# def recommendTracks(artists):
+#     return sp.recommendations(seed_artists=artists)
