@@ -1,9 +1,11 @@
 import flask
+import spobby
 
 app = flask.Flask("__main__")
 
 @app.route("/")
 def my_index():
+    spobby.main()
     return flask.render_template("index.html", token="SHOOORYUKEN")
 
 @app.route("/app/<literal>")
