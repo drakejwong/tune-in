@@ -160,6 +160,7 @@ then validate login on frontend and offer the table dom.
         <TopBar />
 
         <div className="App">
+          window.da_token
           <div>
             { !this.state.loggedIn &&
               <div>
