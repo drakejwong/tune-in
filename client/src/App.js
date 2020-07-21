@@ -195,7 +195,10 @@ then validate login on frontend and offer the table dom.
             }
           </div> */}
           <div>
-            { window.token}
+            { window.token }
+          </div>
+          <div>
+            { window.token2 }
           </div>
           {/* <div>
             { this.state.loggedIn &&
