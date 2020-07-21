@@ -29,9 +29,9 @@ def main():
     for r in results['tracks']:
         print("recommendation:", r['name'], "by", r['artists'][0]['name'])
 
-    if results:
-        recs = [track['id'] for track in results['tracks']]
-        recs_list = generate("API Playlist Test", recs)
+    # if results:
+    #     recs = [track['id'] for track in results['tracks']]
+    #     recs_list = generate("API Playlist Test", recs)
 
 if __name__ == '__main__':
     main()

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-import SpotifyWebApi from "spotify-web-api-js";
 import TopBar from './components/TopBar';
 import LoginButton from './components/loginButton';
 import Info from './components/Info';
@@ -11,21 +10,21 @@ import {
   Container
 } from "reactstrap";
 
-const spot = new SpotifyWebApi();
+// const spot = new SpotifyWebApi();
 
 
 class App extends Component {
   constructor() {
     super();
-    const params = this.getHashParams();
-    const token = params.access_token;
-    if (token) {
-      spot.setAccessToken(token);
-    }
+    // const params = this.getHashParams();
+    // const token = params.access_token;
+    // if (token) {
+    //   spot.setAccessToken(token);
+    // }
     this.state = {
-      loggedIn: token ? true : false,
-      topTracks: [],
-      topArtists: [],
+      loggedIn: true,
+      topTracks: window.token,
+      topArtists: window.token2,
       user_id: ""
     }
   }
@@ -36,45 +35,52 @@ first see if we can print the access token.
   rn taking directly from url which is from the js auth's redirect.
 then validate login on frontend and offer the table dom.
 */
-  getHashParams() {
-    var hashParams = {};
-    var e, r = /([^&;=]+)=?([^&;]*)/g,
-        q = window.location.hash.substring(1);
-    e = r.exec(q)
-    while (e) {
-       hashParams[e[1]] = decodeURIComponent(e[2]);
-       e = r.exec(q);
-    }
-    return hashParams;
-  }
+  // getHashParams() {
+  //   var hashParams = {};
+  //   var e, r = /([^&;=]+)=?([^&;]*)/g,
+  //       q = window.location.hash.substring(1);
+  //   e = r.exec(q)
+  //   while (e) {
+  //      hashParams[e[1]] = decodeURIComponent(e[2]);
+  //      e = r.exec(q);
+  //   }
+  //   return hashParams;
+  // }
+
+  // getTops() {
+  //   spot.getMe()
+  //     .then((user) => {
+  //       this.setState({
+  //         user_id: user.id
+  //       });
+  //     })
+  //   spot.getMyTopTracks({
+  //     limit: 50,
+  //     time_range: "short_term"
+  //   })
+  //     .then((response) => {
+  //       this.setState({
+  //         topTracks: response.items
+  //       });
+  //     })
+  //   console.log(this.state)
+  //   spot.getMyTopArtists({
+  //     limit: 50,
+  //     time_range: "short_term"
+  //   })
+  //     .then((response) => {
+  //       this.setState({
+  //         topArtists: response.items
+  //       });
+  //     })
+  //   console.log(this.state)
+  // }
 
   getTops() {
-    spot.getMe()
-      .then((user) => {
-        this.setState({
-          user_id: user.id
-        });
-      })
-    spot.getMyTopTracks({
-      limit: 50,
-      time_range: "short_term"
-    })
-      .then((response) => {
-        this.setState({
-          topTracks: response.items
-        });
-      })
-    console.log(this.state)
-    spot.getMyTopArtists({
-      limit: 50,
-      time_range: "short_term"
-    })
-      .then((response) => {
-        this.setState({
-          topArtists: response.items
-        });
-      })
-    console.log(this.state)
+    this.setState({
+      topTracks: window.token,
+      topArtists: window.token2
+    });
   }
 
   renderTracksTableData() {
@@ -160,7 +166,6 @@ then validate login on frontend and offer the table dom.
         <TopBar />
 
         <div className="App">
-          window.da_token
           <div>
             { !this.state.loggedIn &&
               <div>
@@ -173,23 +178,26 @@ then validate login on frontend and offer the table dom.
                   </Row>
                 </Container>
                 <br />
-                <a href='http://localhost:8888' > <LoginButton msg="Log In To Spotify Now, CMON!!!!"/> </a>
+                <a href='http://localhost:5000' > <LoginButton msg="Log In To Spotify Now, CMON!!!!"/> </a>
               </div>
             }
           </div>
-          <div>
+          {/* <div>
             { this.state.loggedIn &&
               <Info></Info>
             }
-          </div>
+          </div> */}
           {/* <div>
             { this.state.loggedIn &&
               <div>
                 { this.renderTrackTable() }
               </div>
             }
-          </div>
+          </div> */}
           <div>
+            { window.token}
+          </div>
+          {/* <div>
             { this.state.loggedIn &&
               <div>
                 { this.renderArtistTable() }
