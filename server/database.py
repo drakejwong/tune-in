@@ -12,7 +12,7 @@ DATABASE_CONNECTION = f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{SERVER}/{DA
 
 class Database():
     #create DB connection string with user:pw@server/dbname
-    engine = create_engine(DATABASE_CONNECTION)
+    engine = db.create_engine(DATABASE_CONNECTION)
 
     def __init__(self):
         #establishes connection when this database class is creaated wherever used.
@@ -22,7 +22,7 @@ class Database():
     def saveData(self, user):
         session = Session(bind=self.connection)        
         session.add(user)
-        session.commit())
+        session.commit()
     
     def fetchUserByName(self):
         meta = MetaData()
@@ -66,7 +66,7 @@ Base = declarative_base()
 
 class User(Base):
     """Model for user information."""
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     name = Column(String)
     age = Column(Integer)
     email = Column(String)
