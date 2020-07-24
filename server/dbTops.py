@@ -63,7 +63,7 @@ class Database():
 Base = declarative_base()
 
 class Artist(Base):
-    """Model for user information."""
+    """Model for top artists table."""
     __tablename__ = 'artists'
     spotify_uri = Column(String)
     rank = Column(Integer)
@@ -71,4 +71,15 @@ class Artist(Base):
     id = Column(Integer, primary_key=True)
 
     def __repr__(self):
-        return "<User(spoitfy_uri='%s', rank='%s', user_id='%s')>" % (self.spotify_uri, self.rank, self.user_id)
+        return "<User(spotify_uri='%s', rank='%s', user_id='%s')>" % (self.spotify_uri, self.rank, self.user_id)
+
+class Track(Base):
+    """Model for top tracks table."""
+    __tablename__ = 'tracks'
+    spotify_uri = Column(String)
+    rank = Column(Integer)
+    user_id = Column(Integer)
+    id = Column(Integer, primary_key=True)
+
+    def __repr__(self):
+        return "<User(spotify_uri='%s', rank='%s', user_id='%s')>" % (self.spotify_uri, self.rank, self.user_id)
