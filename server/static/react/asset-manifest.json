@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/static/react/css/main.908af5eb.chunk.css",
+    "main.js": "/static/react/js/main.9c39591c.chunk.js",
+    "main.js.map": "/static/react/js/main.9c39591c.chunk.js.map",
+    "runtime-main.js": "/static/react/js/runtime-main.2b7f3823.js",
+    "runtime-main.js.map": "/static/react/js/runtime-main.2b7f3823.js.map",
+    "css/2.c97c83f8.chunk.css": "/static/react/css/2.c97c83f8.chunk.css",
+    "js/2.54889892.chunk.js": "/static/react/js/2.54889892.chunk.js",
+    "js/2.54889892.chunk.js.map": "/static/react/js/2.54889892.chunk.js.map",
+    "../../templates/index.html": "/static/react/../../templates/index.html",
+    "css/2.c97c83f8.chunk.css.map": "/static/react/css/2.c97c83f8.chunk.css.map",
+    "css/main.908af5eb.chunk.css.map": "/static/react/css/main.908af5eb.chunk.css.map",
+    "js/2.54889892.chunk.js.LICENSE.txt": "/static/react/js/2.54889892.chunk.js.LICENSE.txt",
+    "media/blk-design-system-react.scss": "/static/react/media/square5.ff004a0e.png",
+    "media/nucleo-icons.css": "/static/react/media/nucleo.f0b489a5.woff",
+    "precache-manifest.a3d0f6b8379c654d6240f400639f96e7.js": "/static/react/precache-manifest.a3d0f6b8379c654d6240f400639f96e7.js",
+    "service-worker.js": "/static/react/service-worker.js"
+  },
+  "entrypoints": [
+    "js/runtime-main.2b7f3823.js",
+    "css/2.c97c83f8.chunk.css",
+    "js/2.54889892.chunk.js",
+    "css/main.908af5eb.chunk.css",
+    "js/main.9c39591c.chunk.js"
+  ]
+}

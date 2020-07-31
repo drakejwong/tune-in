@@ -4,6 +4,9 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+import "blk-design-system-react/src/assets/scss/blk-design-system-react.scss";
+import "blk-design-system-react/src/assets/css/nucleo-icons.css";
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
