@@ -3,7 +3,7 @@ from getUserTops import getTops
 from createPlaylist import generate
 from spot_auth import user_id
 from getRecs import recommendTracks
-from dbTops import Database, Artist, Track
+from database import Database, TopArtists, TopTracks
 
 app = flask.Flask("__main__")
 
@@ -21,14 +21,13 @@ def login_redirect():
         uripapa = 'spotify:track:' + item['id']
         # if i < 2:
         #     s_tracks.append(uripapa)
-        db.saveData(Track(spotify_uri=uripapa, rank=i, user_id=user_id))
+        db.saveData(TopTracks(spotify_uri=uripapa, rank=i, user_id=user_id))
 
     for i, item in enumerate(topArtists):
         uripapa = 'spotify:artist:' + item['id']
         # if i < 3:
         #     s_artists.append(uripapa)
-        db.saveData(Artist(spotify_uri=uripapa, rank=i, user_id=user_id))
-
+        db.saveData(TopArtists(spotify_uri=uripapa, rank=i, user_id=user_id))
 
     # results = recommendTracks(tracks=s_tracks, artists=s_artists)
     # results = recommendTracks(tracks=to_playlist)
