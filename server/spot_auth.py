@@ -1,9 +1,7 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-# import creds
+import creds
 
-SPOTIPY_CLIENT_ID="e4e6d6d4631e4ed5b0b06975e16aba24"
-SPOTIPY_CLIENT_SECRET="3d439b94b1724600895dcd6d5d016bb8"
 SPOTIPY_REDIRECT_URI="http://localhost:5000/callback/"
 
 CACHE = ".userinfo"
