@@ -33,7 +33,7 @@ def login_redirect():
     
     db.saveUserData(track_objects)
     db.saveUserData(artist_objects)
-
+    
     """
     DUDE THIS SHIT SHOULD WORK BUT IT DOESNT WTF
     if db.userExistsInTable(user_id, TopTracks) and db.userExistsInTable(user_id, TopArtists):
