@@ -5,18 +5,18 @@ from sqlalchemy import join
 from sqlalchemy.orm import aliased
 from sqlalchemy import bindparam
 from sqlalchemy.ext.declarative import declarative_base
-import sqlalchemy as db
+import sqlalchemy as sql
 import psycopg2
 
 SERVER = 'localhost:5432'
 DATABASE = 'test'
 USERNAME = 'postgres'
-PASSWORD = ''
+PASSWORD = 'Invincible31'
 DATABASE_CONNECTION = f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}'
 
 class Database():
     #create DB connection string with user:pw@server/dbname
-    engine = db.create_engine(DATABASE_CONNECTION)
+    engine = sql.create_engine(DATABASE_CONNECTION)
 
     def __init__(self):
         #establishes connection when this database class is created wherever used.
@@ -28,45 +28,38 @@ class Database():
         for data in fetchQuery.fetchall():
             print(data)
 
-    def saveData(self, user):
-        session = Session(bind=self.connection)
-        session.add(user)
-        session.commit()
-
     def userExistsInTable(self, user_id, table):
         session = Session(bind=self.connection)
         return len(session.query(table).filter(table.user_id == user_id).all()) > 0
 
-    def fetchUserData(self, user_id, table):
+    def displayUserData(self, user_id, table):
         session = Session(bind=self.connection)
         result = session.query(table).filter(table.user_id == user_id)
         for row in result:
             print ("rank:",row.rank, "URI: ",row.spotify_uri)
     
     def fetchAllUsersInTable(self, table):
-        self.session = Session(bind=self.connection)
-        users = self.session.query(table).all()
+        session = Session(bind=self.connection)
+        users = session.query(table).all()
         for user in users:
             print(user)
-    
+
+    def saveUserData(self, entries):
+        session = Session(bind=self.connection)
+        session.bulk_save_objects(entries)
+        session.commit()
+
     def deleteUserData(self, user_id, table):
         session = Session(bind=self.connection)
         result = session.query(table).filter(table.user_id == user_id)
         result.delete()
         session.commit()
 
-    def updateUserTracks(self, user_id, track_list): 
-        if not self.userExistsInTable(user_id, TopTracks):
-            raise SystemError("No user found")
-        
-        updated_tracks = []
-        for i, track in enumerate(track_list):
-            # uripapa = 'spotify:track:' + track['id']
-            updated_tracks.append({"new_user_id": user_id, "new_spotify_uri": track, "new_rank": i})
-        session = Session(bind=self.connection)
-        statement = TopTracks.__table__.update().where(TopTracks.user_id == bindparam('new_user_id')).where(TopTracks.rank == bindparam('new_rank')).values(spotify_uri=bindparam('new_spotify_uri'))
-        session.execute(statement, updated_tracks)
-        session.commit()
+    # def updateUserData(self, entries, table): 
+    #     session = Session(bind=self.connection)
+    #     statement = table.__table__.update().where(table.user_id == bindparam('b_user_id')).where(table.rank == bindparam('b_rank')).values(spotify_uri=bindparam('b_spotify_uri'))
+    #     session.execute(statement, entries)
+    #     session.commit()
 
     def getShared(self, user_list, table):  # RANKSUM BABYYYY
         """
