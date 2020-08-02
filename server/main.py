@@ -1,9 +1,10 @@
 import flask
 from getUserTops import getTops
 from createPlaylist import generate
-from spot_auth import user_id
+from spot_auth import user_id, user_name, user_country, user_profile_pic
 from getRecs import recommendTracks
-from database import Database, TopArtists, TopTracks
+from database import Database, TopTracks, TopArtists, Users
+from sqlalchemy.orm import Session
 
 app = flask.Flask("__main__")
 
@@ -11,64 +12,28 @@ app = flask.Flask("__main__")
 def login_redirect():
     term = 'short_term'
     tracks_list, artists_list = getTops(term)
-    # dummy_list = ['asdfadsfasdfasdf' for _ in range(50)]
-    assert len(tracks_list) == len(artists_list)
-    N = len(tracks_list)
-    
+    assert len(tracks_list) == len(artists_list)    
+
     db = Database()
-    db.deleteUserData(user_id, TopTracks)
-    db.deleteUserData(user_id, TopArtists)
-
-    track_objects = artist_objects = []
-    for i in range(N):
-        track_item = tracks_list[i]
-        track_uri = 'spotify:track:' + track_item['id']
-        # track_uri = dummy_list[i]
-        track_objects.append(TopTracks(user_id=user_id, spotify_uri=track_uri, rank=i))
-
-        artist_item = artists_list[i]
-        artist_uri = 'spotify:artist:' + artist_item['id']
-        # artist_uri = dummy_list[i]
-        artist_objects.append(TopArtists(user_id=user_id, spotify_uri=artist_uri, rank=i))
-    
-    db.saveUserData(track_objects)
-    db.saveUserData(artist_objects)
-    
-    """
-    DUDE THIS SHIT SHOULD WORK BUT IT DOESNT WTF
-    if db.userExistsInTable(user_id, TopTracks) and db.userExistsInTable(user_id, TopArtists):
-        # preparing to bulk update
-        updated_tracks = updated_artists = []
-        for i in range(N):
-            track_item = tracks_list[i]
-            track_uri = 'spotify:track:' + track_item['id']
-            # track_uri = dummy_list[i]
-            updated_tracks.append({'b_user_id': user_id, 'b_spotify_uri': track_uri, 'b_rank': i})
-
-            artist_item = artists_list[i]
-            artist_uri = 'spotify:artist:' + artist_item['id']
-            # artist_uri = dummy_list[i]
-            updated_artists.append({'b_user_id': user_id, 'b_spotify_uri': artist_uri, 'b_rank': i})
+    session = Session(bind=db.connection)
+    try:
+        # db.deleteUserData(user_id, TopTracks, session)
+        # db.deleteUserData(user_id, TopArtists, session)
+        # db.deleteUserData(user_id, Users, session)
         
-        db.updateUserData(updated_tracks, TopTracks)
-        db.updateUserData(updated_artists, TopArtists)
+        if db.userExistsInTable(user_id, Users, session):
+            db.updateLoginTime(user_id, session)
+            db.updateUserTops(user_id, tracks_list, artists_list, session)
+        else:
+            db.createUser(user_id, user_name, user_country, user_profile_pic, session)
+            db.saveUserTops(user_id, tracks_list, artists_list, session)
 
-    else:
-        # preparing to bulk save
-        track_objects = artist_objects = []
-        for i in range(N):
-            track_item = tracks_list[i]
-            track_uri = 'spotify:track:' + track_item['id']
-            track_objects.append(TopTracks(user_id=user_id, spotify_uri=track_uri, rank=i))
-
-            artist_item = artists_list[i]
-            artist_uri = 'spotify:artist:' + artist_item['id']
-            artist_objects.append(TopArtists(user_id=user_id, spotify_uri=artist_uri, rank=i))
-        
-        db.saveUserData(track_objects)
-        db.saveUserData(artist_objects)
-    """
-        
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
     # results = recommendTracks(tracks=s_tracks, artists=s_artists)
     # results = recommendTracks(tracks=to_playlist)

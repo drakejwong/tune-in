@@ -1,8 +1,10 @@
 from database import Database, TopArtists, TopTracks
 from getUserTops import getTops
 from spot_auth import user_id
+from sqlalchemy.orm import Session
 
-db = Database()
+
+# db = Database()
 
 # db.fetchUserData(user_id, TopTracks, tracks_list)
 # shared = db.getShared([user_id, 696969], TopArtists)
