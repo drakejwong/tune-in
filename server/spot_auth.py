@@ -11,5 +11,5 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(creds.SPOTIPY_CLIENT_ID, creds.SP
 user_id = sp.me()['id']
 user_country = sp.me()['country']
 user_name = sp.me()['display_name']
-user_profile_pic = sp.me()['images'][0]['url']
-# print(user_profile_pic)
+user_profile_pic = sp.me()['images'][0]['url'] if not '' else 'https://www.uokpl.rs/fpng/d/490-4909214_swag-wooper-png.png'
+
