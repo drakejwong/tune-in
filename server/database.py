@@ -8,7 +8,7 @@ import datetime
 import creds
 
 SERVER = 'localhost:5432'
-DATABASE = 'test'
+DATABASE = 'UserTops'
 USERNAME = 'postgres'
 PASSWORD = creds.PASSWORD
 DATABASE_CONNECTION = f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}'
@@ -29,7 +29,7 @@ class Database():
 
     def createUser(self, user_id, user_name, user_country, user_profile_pic, session):
         session.add(Users(user_id=user_id, display_name=user_name, country=user_country, profile_picture=user_profile_pic))
-    
+
     def updateLoginTime(self, user_id, session):
         user = session.query(Users).filter(Users.user_id == user_id).first()
         user.last_login = datetime.datetime.utcnow()
@@ -41,7 +41,7 @@ class Database():
         result = session.query(table).filter(table.user_id == user_id)
         for row in result:
             print ("rank:",row.rank, "URI: ",row.spotify_uri)
-    
+
     def fetchAllUsersInTable(self, table, session):
         users = session.query(table).all()
         for user in users:
@@ -54,7 +54,7 @@ class Database():
         result = session.query(table).filter(table.user_id == user_id)
         result.delete()
 
-    def updateUserData(self, entries, table, session): 
+    def updateUserData(self, entries, table, session):
         statement = table.__table__.update().where(table.user_id == bindparam('b_user_id')).where(table.rank == bindparam('b_rank')).values(spotify_uri=bindparam('b_spotify_uri'))
         session.execute(statement, entries)
 
@@ -72,10 +72,10 @@ class Database():
             artist_uri = 'spotify:artist:' + artist_item['id']
             # artist_uri = dummy_list[i]
             artist_objects.append(TopArtists(user_id=user_id, spotify_uri=artist_uri, rank=i))
-      
+
         self.saveUserData(track_objects, session)
         self.saveUserData(artist_objects, session)
-        
+
     def updateUserTops(self, user_id, tracks_list, artists_list, session):
         # dummy_list = ['asdfadsfasdfasdf' for _ in range(50)]
         updated_tracks = []
@@ -90,7 +90,7 @@ class Database():
             artist_uri = 'spotify:artist:' + artist_item['id']
             # artist_uri = dummy_list[i]
             updated_artists.append({'b_user_id': user_id, 'b_spotify_uri': artist_uri, 'b_rank': i})
-        
+
         self.updateUserData(updated_tracks, TopTracks, session)
         self.updateUserData(updated_artists, TopArtists, session)
 
@@ -119,9 +119,9 @@ class Database():
                     shared_data[uri].append(rank)
 
         for uri in shared_data:
-            missing = len(user_list) - len(shared_data[uri]) 
-            shared_data[uri] += [100] * missing 
-        
+            missing = len(user_list) - len(shared_data[uri])
+            shared_data[uri] += [100] * missing
+
         ordered_data = [[uri, ranks] for uri, ranks in sorted(shared_data.items(), key=lambda item: sum(item[1]))]
         print(ordered_data)
         return ordered_data
@@ -153,7 +153,7 @@ class TopTracks(Base):
 
     def __repr__(self):
         return "<Track(user_id='%s', spotify_uri='%s', rank='%s')>" % (self.user_id, self.spotify_uri, self.rank)
-        
+
 class Users(Base):
     """Model for users table."""
     __tablename__ = 'users'
