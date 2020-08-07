@@ -14,7 +14,7 @@ user_name = sp.me()['display_name']
 pfp = sp.me()['images']
 # print(len(pfp))
 if not pfp:
-    user_profile_pic = "nopfp.smh"
+    user_profile_pic = "https://www.uokpl.rs/fpng/d/490-4909214_swag-wooper-png.png"
 else:
     user_profile_pic = sp.me()['images'][0]['url']
 # print(user_profile_pic)
