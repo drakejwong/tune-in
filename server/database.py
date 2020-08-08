@@ -9,7 +9,7 @@ import datetime
 import creds
 
 SERVER = 'localhost:5432'
-DATABASE = 'test'
+DATABASE = 'UserTops'
 USERNAME = 'postgres'
 PASSWORD = creds.PASSWORD
 DATABASE_CONNECTION = f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}'
@@ -37,7 +37,7 @@ class Database():
         result = session.query(table).filter(table.user_id == user_id)
         for row in result:
             print ("rank:",row.rank, "URI: ",row.spotify_uri)
-    
+            
     def fetch_all_users_in_table(self, table, session):
         users = session.query(table).all()
         for user in users:
@@ -67,24 +67,22 @@ class Database():
             artist_item = artists_list[i]
             artist_uri = 'spotify:artist:' + artist_item['id']
             # artist_uri = dummy_list[i]
-            artist_objects.append(TopArtists(user_id=user_id, spotify_uri=artist_uri, rank=i))
-      
+            artist_objects.append(TopArtists(user_id=user_id, spotify_uri=artist_uri, rank=i))      
         self.bulk_save_data(track_objects, session)
         self.bulk_save_data(artist_objects, session)
         
     def update_user_tops(self, user_id, tracks_list, artists_list, session):
-        # dummy_list = ['asdfadsfasdfasdf' for _ in range(50)]
+        self.saveUserData(track_objects, session)
+        self.saveUserData(artist_objects, session)
         updated_tracks = []
         updated_artists = []
         for i in range(len(tracks_list)):
             track_item = tracks_list[i]
             track_uri = 'spotify:track:' + track_item['id']
-            # track_uri = dummy_list[i]
             updated_tracks.append({'b_user_id': user_id, 'b_spotify_uri': track_uri, 'b_rank': i})
 
             artist_item = artists_list[i]
             artist_uri = 'spotify:artist:' + artist_item['id']
-            # artist_uri = dummy_list[i]
             updated_artists.append({'b_user_id': user_id, 'b_spotify_uri': artist_uri, 'b_rank': i})
         
         self.update_user_data(updated_tracks, TopTracks, session)
@@ -115,9 +113,9 @@ class Database():
                     shared_data[uri].append(rank)
 
         for uri in shared_data:
-            missing = len(user_list) - len(shared_data[uri]) 
-            shared_data[uri] += [100] * missing 
-        
+            missing = len(user_list) - len(shared_data[uri])
+            shared_data[uri] += [100] * missing
+
         ordered_data = [[uri, ranks] for uri, ranks in sorted(shared_data.items(), key=lambda item: sum(item[1]))]
         # print(ordered_data)
         return ordered_data
@@ -215,5 +213,3 @@ class PartyTracks(Base):
 
     def __repr__(self):
         return "<PartyTrack(party_id='%s', track_id='%s', track_number='%s')>" % (self.party_id, self.track_id, self.track_number)
-        
-
