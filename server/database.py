@@ -7,7 +7,6 @@ import sqlalchemy as sql
 import psycopg2
 import datetime
 import creds
-import uuid
 
 SERVER = 'localhost:5432'
 DATABASE = 'test'
@@ -149,6 +148,14 @@ class Database():
     def delete_party_data(self, party_id, table, session):
         result = session.query(table).filter(table.party_id == party_id)
         result.delete()
+
+    def get_party_tracks(self, party_id, session):
+        row = session.query(PartyTracks.track_id).filter(PartyTracks.party_id == party_id).all()
+        party_tracks = [track.track_id for track in row]
+        return party_tracks
+    
+    def user_exists_in_party(self, user_id, party_id, session):
+        return len(session.query(Party).filter(Party.user_id == user_id, Party.party_id == party_id).all()) > 0
 
 Base = declarative_base()
 
