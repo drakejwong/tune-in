@@ -1,9 +1,7 @@
 import flask
 from flask import request
-from getUserTops import get_top_tracks, get_top_artists
-from createPlaylist import generate_party_playlist
 from spot_auth import user_id, user_name, user_country, user_profile_pic
-from getRecs import recommend_tracks
+from spot_calls import get_top_tracks, get_top_artists, recommend_tracks, generate_party_playlist
 from database import Database, TopTracks, TopArtists, Users, Party, PartyTracks
 from sqlalchemy.orm import Session
 from contextlib import contextmanager
@@ -60,9 +58,9 @@ def update_user_data(db, session):
         db.create_user(user_id, user_name, user_country, user_profile_pic, session)
         db.save_user_tops(user_id, tracks_list, artists_list, session)
 
-def preview_party_playlist(): 
+def preview_party_playlist():
     # on click, calculates seeds for users in party and displays recommended tracks, can be refreshed
-    party_id = fetch_party_id_from_url() 
+    party_id = fetch_party_id_from_url()
     db = Database()
     with session_scope(db) as session:
         party_users = db.get_party_users(party_id, session)
@@ -71,7 +69,7 @@ def preview_party_playlist():
         seed_tracks = db.get_k_seeds(shared_tracks, 3)
         seed_artists = db.get_k_seeds(shared_artists, 2)
         results = recommend_tracks(tracks=seed_tracks, artists=seed_artists)
-        
+
         # save results to database
         if db.party_id_exists_in_table(party_id, PartyTracks, session):
             recommended_tracks = [{'b_party_id': party_id, 'b_track_id': track['id'], 'b_track_number': i} for i, track in enumerate(results['tracks'])]
