@@ -1,16 +1,15 @@
 import flask
 from flask import request
-from spot_auth import user_id, user_name, user_country, user_profile_pic
-from spot_calls import get_top_tracks, get_top_artists, recommend_tracks, generate_party_playlist
+from spot_auth import user_id, user_name, user_profile_pic
+from spot_calls import get_top_tracks, get_top_tracks_all_terms, get_top_artists_all_terms, get_top_artists, recommend_tracks, generate_party_playlist
 from database import Database, TopTracks, TopArtists, Users, Party, PartyTracks
 from sqlalchemy.orm import Session
 from contextlib import contextmanager
 
 app = flask.Flask("__main__")
 
-term = "short_term"
-tracks_list = get_top_tracks(term)
-artists_list = get_top_artists(term)
+top_tracks_all_terms = get_top_tracks_all_terms()
+top_artists_all_terms = get_top_artists_all_terms()
 
 @contextmanager
 def session_scope(db):
@@ -27,15 +26,19 @@ def session_scope(db):
 
 # db = Database()
 # with session_scope(db) as session:
-#     db.delete_user_data(user_id, Party, session)
+#     db.create_party(696969, session)
+    # db.delete_user_from_database(user_id, session)
+    # db.delete_user_data(user_id, Users, session)
+    # db.delete_user_data(user_id, TopTracks, session)
+    # db.delete_user_data(user_id, TopArtists, session)
 
 @app.route("/")
 def login_redirect():
     db = Database()
     with session_scope(db) as session:
         update_user_data(db, session)
-    namez = [tt["name"] for tt in tracks_list]
-    artz = [ta["name"] for ta in artists_list]
+    namez = [tt["name"] + ' - ' + tt['artists'][0]["name"] for term in top_tracks_all_terms for tt in term]
+    artz = [ta["name"] for term in top_artists_all_terms for ta in term]
     return flask.render_template("index.html", trax=namez, art=artz)
 
 @app.route("/party/<party_id>") # we provide invite link, which is unique to every party
@@ -44,19 +47,25 @@ def party_invite(party_id):
     with session_scope(db) as session:
         update_user_data(db, session)
         if not db.user_exists_in_party(user_id, party_id, session):
-            print('we in here')
             db.add_to_party(user_id, party_id, session)
-    # preview_party_playlist()
+    
+    # on click
+    results = preview_party_playlist()
+    namez = [track["name"] + ' - ' + track['artists'][0]["name"] for track in results['tracks']]
+    return flask.render_template("index.html", trax=namez)
+    
     # save_party_playlist()
-    return 'issa party' # party page
+    # return 'issa party' # party page
 
 def update_user_data(db, session):
+    # user_id = '696969'
     if db.user_exists_in_table(user_id, Users, session):
+        assert db.user_exists_in_table(user_id, TopTracks, session) and db.user_exists_in_table(user_id, TopArtists, session)
         db.update_login_time(user_id, session)
-        db.update_user_tops(user_id, tracks_list, artists_list, session)
+        db.save_user_tops(user_id, top_tracks_all_terms, top_artists_all_terms, session, update=True)
     else:
-        db.create_user(user_id, user_name, user_country, user_profile_pic, session)
-        db.save_user_tops(user_id, tracks_list, artists_list, session)
+        db.create_user(user_id, user_name, user_profile_pic, session)
+        db.save_user_tops(user_id, top_tracks_all_terms, top_artists_all_terms, session)
 
 def preview_party_playlist():
     # on click, calculates seeds for users in party and displays recommended tracks, can be refreshed
@@ -77,11 +86,13 @@ def preview_party_playlist():
         else:
             recommended_tracks = [PartyTracks(party_id=party_id, track_id=track['id'], track_number=i) for i, track in enumerate(results['tracks'])]
             db.bulk_save_data(recommended_tracks, session)
-
+    return results
     # display proposed tracks on front-end here
-    print("Recommended tracks:")
-    for track in results['tracks']:
-        print(track['name'], "by", track['artists'][0]['name'])
+    # print("Recommended tracks:")
+    # for track in results['tracks']:
+    #     print(track['name'], "by", track['artists'][0]['name'])
+
+
 
 def save_party_playlist(): # button appears after displaying recommended tracks
     party_id = fetch_party_id_from_url()

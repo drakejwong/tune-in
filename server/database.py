@@ -9,7 +9,7 @@ import datetime
 import creds
 
 SERVER = 'localhost:5432'
-DATABASE = 'UserTops'
+DATABASE = 'tune_in'
 USERNAME = 'postgres'
 PASSWORD = creds.PASSWORD
 DATABASE_CONNECTION = f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}'
@@ -23,8 +23,8 @@ class Database():
         self.connection = self.engine.connect()
         print("Database Instance created")
 
-    def create_user(self, user_id, user_name, user_country, user_profile_pic, session):
-        session.add(Users(user_id=user_id, display_name=user_name, country=user_country, profile_picture=user_profile_pic))
+    def create_user(self, user_id, user_name, user_profile_pic, session):
+        session.add(Users(user_id=user_id, display_name=user_name, profile_picture=user_profile_pic))
     
     def update_login_time(self, user_id, session):
         user = session.query(Users).filter(Users.user_id == user_id).first()
@@ -32,16 +32,6 @@ class Database():
 
     def user_exists_in_table(self, user_id, table, session):
         return len(session.query(table).filter(table.user_id == user_id).all()) > 0
-
-    def display_user_data(self, user_id, table, session):
-        result = session.query(table).filter(table.user_id == user_id)
-        for row in result:
-            print ("rank:",row.rank, "URI: ",row.spotify_uri)
-            
-    def fetch_all_users_in_table(self, table, session):
-        users = session.query(table).all()
-        for user in users:
-            print(user)
 
     def bulk_save_data(self, entries, session):
         session.bulk_save_objects(entries)
@@ -51,47 +41,56 @@ class Database():
         result.delete()
 
     def update_user_data(self, entries, table, session): 
-        statement = table.__table__.update().where(table.user_id == bindparam('b_user_id')).where(table.rank == bindparam('b_rank')).values(spotify_uri=bindparam('b_spotify_uri'))
+        statement = table.__table__.update().where(table.user_id == bindparam('b_user_id')).where(table.rank == bindparam('b_rank')).values(short_term=bindparam('b_short_term'), medium_term=bindparam('b_medium_term'), long_term=bindparam('b_long_term'))
         session.execute(statement, entries)
+    
+    # def delete_user_from_database(self, user_id, session):
+    #     from sqlalchemy import MetaData
+    #     m = MetaData()
+    #     m.reflect(self.engine)
+    #     for table in m.tables.values():
+    #         self.delete_user_data(user_id, table, session)
 
-    def save_user_tops(self, user_id, tracks_list, artists_list, session):
-        # dummy_list = ['asdfadsfasdfasdf' for _ in range(50)]
+    def save_user_tops(self, user_id, top_tracks_all_terms, top_artists_all_terms, session, update=False):
+        num_terms = len(top_tracks_all_terms)
+        num_tracks_per_term = len(top_tracks_all_terms[0])
+        assert num_terms == 3, num_tracks_per_term == 50
+
         track_objects = []
         artist_objects = []
-        for i in range(len(tracks_list)):
-            track_item = tracks_list[i]
-            track_uri = 'spotify:track:' + track_item['id']
-            # track_uri = dummy_list[i]
-            track_objects.append(TopTracks(user_id=user_id, spotify_uri=track_uri, rank=i))
-
-            artist_item = artists_list[i]
-            artist_uri = 'spotify:artist:' + artist_item['id']
-            # artist_uri = dummy_list[i]
-            artist_objects.append(TopArtists(user_id=user_id, spotify_uri=artist_uri, rank=i))      
-        self.bulk_save_data(track_objects, session)
-        self.bulk_save_data(artist_objects, session)
         
-    def update_user_tops(self, user_id, tracks_list, artists_list, session):
-        self.saveUserData(track_objects, session)
-        self.saveUserData(artist_objects, session)
-        updated_tracks = []
-        updated_artists = []
-        for i in range(len(tracks_list)):
-            track_item = tracks_list[i]
-            track_uri = 'spotify:track:' + track_item['id']
-            updated_tracks.append({'b_user_id': user_id, 'b_spotify_uri': track_uri, 'b_rank': i})
+        for i in range(num_tracks_per_term):
+            
+            ith_ranked_tracks_per_term = []
+            ith_ranked_artists_per_term = []
+            
+            for term in range(num_terms):
+                track_item = top_tracks_all_terms[term][i]
+                track_uri = track_item['uri']
+                ith_ranked_tracks_per_term.append(track_uri)
 
-            artist_item = artists_list[i]
-            artist_uri = 'spotify:artist:' + artist_item['id']
-            updated_artists.append({'b_user_id': user_id, 'b_spotify_uri': artist_uri, 'b_rank': i})
+                artist_item = top_artists_all_terms[term][i]
+                artist_uri = artist_item['uri']
+                ith_ranked_artists_per_term.append(artist_uri)
+            
+            if update:
+                track_objects.append({'b_user_id': user_id, 'b_rank': i+1, 'b_short_term': ith_ranked_tracks_per_term[0], 'b_medium_term': ith_ranked_tracks_per_term[1], 'b_long_term': ith_ranked_tracks_per_term[2]})
+                artist_objects.append({'b_user_id': user_id, 'b_rank': i+1, 'b_short_term': ith_ranked_artists_per_term[0], 'b_medium_term': ith_ranked_artists_per_term[1], 'b_long_term': ith_ranked_artists_per_term[2]})
+            else:
+                track_objects.append(TopTracks(user_id=user_id, rank=i+1, short_term=ith_ranked_tracks_per_term[0], medium_term=ith_ranked_tracks_per_term[1], long_term=ith_ranked_tracks_per_term[2]))
+                artist_objects.append(TopArtists(user_id=user_id, rank=i+1, short_term=ith_ranked_artists_per_term[0], medium_term=ith_ranked_artists_per_term[1], long_term=ith_ranked_artists_per_term[2]))      
+
+        if update:
+            self.update_user_data(track_objects, TopTracks, session)
+            self.update_user_data(artist_objects, TopArtists, session)
+        else:
+            self.bulk_save_data(track_objects, session)
+            self.bulk_save_data(artist_objects, session)
         
-        self.update_user_data(updated_tracks, TopTracks, session)
-        self.update_user_data(updated_artists, TopArtists, session)
-
     def get_shared(self, user_list, table, session):  # RANKSUM BABYYYY
         """
         Returns list of shared objects between n users.
-
+-
         Parameters:
             user_list: list of user ids
             table: Track or Artist
@@ -102,21 +101,25 @@ class Database():
         user_data = [] # list of queries
         for user_id in user_list:
             user_data.append(session.query(table).filter(table.user_id == user_id))
-        shared_data = {}
-        for user in user_data:
-            for row in user:
-                uri = row.spotify_uri
+        shared_data_dict = {}
+        for user_query in user_data:
+            for row in user_query:
+                user_id = row.user_id
                 rank = row.rank
-                if uri not in shared_data:
-                    shared_data[uri] = [rank]
-                else:
-                    shared_data[uri].append(rank)
+                for track_in_term in [row.short_term, row.medium_term, row.long_term]:
+                    if track_in_term in shared_data_dict and user_id not in shared_data_dict[track_in_term]: # only counts first instance of track in all terms for each user (skewed toward short term)
+                        shared_data_dict[track_in_term][user_id] = rank
+                    else:
+                        shared_data_dict[track_in_term] = {user_id: rank}
 
-        for uri in shared_data:
-            missing = len(user_list) - len(shared_data[uri])
-            shared_data[uri] += [100] * missing
-
-        ordered_data = [[uri, ranks] for uri, ranks in sorted(shared_data.items(), key=lambda item: sum(item[1]))]
+        shared_data_list = []
+        for uri, rank_dict in shared_data_dict.items():
+            track = [uri, [rank for rank in rank_dict.values()]]
+            missing = len(user_list) - len(track[1])
+            track[1] += [100] * missing
+            shared_data_list.append(track)
+        
+        ordered_data = sorted(shared_data_list, key=lambda item: sum(item[1]))
         # print(ordered_data)
         return ordered_data
 
@@ -162,34 +165,36 @@ class Users(Base):
     t_id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
     display_name = Column(String)
-    country = Column(String)
     profile_picture = Column(String)
     account_created_at = Column(DateTime, default=datetime.datetime.utcnow)
     last_login = Column(DateTime, default=datetime.datetime.utcnow)
-    # invite_code = Column(String,  default=lambda: str(uuid.uuid4()), unique=True)
 
     def __repr__(self):
-        return "<User(user_id='%s', display_name='%s', country='%s', profile_picture='%s')>" % (self.user_id, self.display_name, self.country, self.profile_picture)
+        return "<Users(user_id='%s', display_name='%s', profile_picture='%s')>" % (self.user_id, self.display_name, self.profile_picture)
 
 class TopArtists(Base):
-    __tablename__ = 'artists'
+    __tablename__ = 'top_artists'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
-    spotify_uri = Column(String)
     rank = Column(Integer)
+    short_term = Column(Integer)
+    medium_term = Column(Integer)
+    long_term = Column(Integer)
 
     def __repr__(self):
-        return "<Artist(user_id='%s', spotify_uri='%s', rank='%s')>" % (self.user_id, self.spotify_uri, self.rank)
+        return "<TopArtists(user_id='%s', rank='%s', short_term='%s', medium_term='%s', long_term='%s')>" % (self.user_id, self.rank, self.short_term, self.medium_term, self.long_term)
 
 class TopTracks(Base):
-    __tablename__ = 'tracks'
+    __tablename__ = 'top_tracks'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
-    spotify_uri = Column(String)
     rank = Column(Integer)
+    short_term = Column(Integer)
+    medium_term = Column(Integer)
+    long_term = Column(Integer)
 
     def __repr__(self):
-        return "<Track(user_id='%s', spotify_uri='%s', rank='%s')>" % (self.user_id, self.spotify_uri, self.rank)
+        return "<TopTracks(user_id='%s', rank='%s', short_term='%s', medium_term='%s', long_term='%s')>" % (self.user_id, self.rank, self.short_term, self.medium_term, self.long_term)
 
 class Party(Base):
     __tablename__ = 'party'
@@ -212,4 +217,4 @@ class PartyTracks(Base):
     date_saved = Column(DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return "<PartyTrack(party_id='%s', track_id='%s', track_number='%s')>" % (self.party_id, self.track_id, self.track_number)
+        return "<PartyTracks(party_id='%s', track_id='%s', track_number='%s', date_saved='%s')>" % (self.party_id, self.track_id, self.track_number, self.date_saved)

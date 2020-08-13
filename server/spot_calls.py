@@ -1,28 +1,38 @@
 from spot_auth import sp, user_id
 
-# Get a user's top tracks and top artists
-def get_top_tracks(term):
-    # items returned are paging objects of Artists / Tracks, indexed into items -- "an array of (track or artist) objects"
+ITEM_LIMIT = 50
+
+def get_top_tracks(term, limit=ITEM_LIMIT):
+    # Returns array of track objects"
     # https://developer.spotify.com/documentation/web-api/reference/personalization/get-users-top-artists-and-tracks/
-    # max is 50
-    topTracks = sp.current_user_top_tracks(limit=50, time_range=term)['items']
+    topTracks = sp.current_user_top_tracks(limit, time_range=term)['items']
     return topTracks
 
-def get_top_artists(term):
-    topArtists = sp.current_user_top_artists(limit=50, time_range=term)['items']
+def get_top_tracks_all_terms(limit=ITEM_LIMIT):
+    terms = ['short_term', 'medium_term', 'long_term']
+    return [get_top_tracks(term) for term in terms]
+
+# print(get_top_tracks('short_term')[1])
+
+def get_top_artists(term, limit=ITEM_LIMIT):
+    # Returns array of artist objects
+    topArtists = sp.current_user_top_artists(limit, time_range=term)['items']
     return topArtists
 
-def get_genre_seeds():
-    return sp.recommendation_genre_seeds()
+def get_top_artists_all_terms(limit=ITEM_LIMIT):
+    # Returns a nested list where each inner list has 50 top tracks from its term
+    terms = ['short_term', 'medium_term', 'long_term']
+    return [get_top_artists(term) for term in terms]
 
+# def get_followed_artists(limit=ITEM_LIMIT):
+#     artists = sp.current_user_followed_artists(limit)['artists']['items']
+
+def recommend_tracks(tracks, artists=None, genres=None, lim=ITEM_LIMIT):
 #get recommendations for a user based on up to 5 seed values of artists, tracks, or genres
 #Parameters:
-#seed_artists - a list of artist IDs, URIs or URLs
-#seed_tracks - a list of track IDs, URIs or URLs
-#seed_genres - a list of genre names.
-#limit - min:1, max:100, default:20
-#Returns: recommendations response object with keys seeds and tracks with values recommendation seed objects and track objects (simplified)
-def recommend_tracks(tracks, artists=None, genres=None, lim=20):
+#   - seed values can be a list of uri's, url's, or id's
+#   - limit - min:1, max:100, default:20
+#Returns: recommendations object with keys seeds and tracks with values recommendation seed objects and track objects (simplified)
     return sp.recommendations(seed_artists=artists, seed_genres=genres, seed_tracks=tracks, limit=lim)
 
 # Creates a playlist for a user
