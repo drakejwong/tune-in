@@ -25,7 +25,10 @@ def session_scope(db):
         session.close()
 
 # db = Database()
+# party_id = 'able-shrewd-sunfish'
 # with session_scope(db) as session:
+#     db.grant_host(user_id, party_id, session)
+
 #     db.create_party(696969, session)
     # db.delete_user_from_database(user_id, session)
     # db.delete_user_data(user_id, Users, session)
@@ -92,8 +95,6 @@ def preview_party_playlist():
     # for track in results['tracks']:
     #     print(track['name'], "by", track['artists'][0]['name'])
 
-
-
 def save_party_playlist(): # button appears after displaying recommended tracks
     party_id = fetch_party_id_from_url()
     db = Database()
@@ -109,5 +110,22 @@ def fetch_party_id_from_url():
     tag = '/party/'
     party_id = url[url.index(tag) + len(tag) : len(url)]
     return party_id
+
+def leave_party(): # on click
+    party_id = fetch_party_id_from_url()
+    db = Database()
+    with session_scope(db) as session:
+        if db.is_host(user_id, party_id, session):
+            # if no one else is in party, delete party (db.delete_party_data())
+            if len(db.get_party_users(party_id, session)) == 1:
+                print('yeehaw')
+                db.delete_party_data(party_id, session)
+            else:
+                db.delete_user_from_party(user_id, party_id, session)
+                new_host = db.get_party_users(party_id, session)[0]
+                db.grant_host(new_host, party_id, session)
+        else:
+            db.delete_user_from_party(user_id, party_id, session)
+    # redirect to homepage or party directory
 
 app.run(debug=True)

@@ -146,9 +146,11 @@ class Database():
     def party_id_exists_in_table(self, party_id, table, session):
         return len(session.query(table).filter(table.party_id == party_id).all()) > 0
 
-    def delete_party_data(self, party_id, table, session):
-        result = session.query(table).filter(table.party_id == party_id)
-        result.delete()
+    def delete_party_data(self, party_id, session):
+        party = session.query(Party).filter(Party.party_id == party_id)
+        party_tracks = session.query(PartyTracks).filter(PartyTracks.party_id == party_id)
+        party.delete()
+        party_tracks.delete()
 
     def get_party_tracks(self, party_id, session):
         row = session.query(PartyTracks.track_id).filter(PartyTracks.party_id == party_id).all()
@@ -157,6 +159,18 @@ class Database():
     
     def user_exists_in_party(self, user_id, party_id, session):
         return len(session.query(Party).filter(Party.user_id == user_id, Party.party_id == party_id).all()) > 0
+    
+    def is_host(self, user_id, party_id, session):
+        return len(session.query(Party).filter(Party.host == user_id, Party.party_id == party_id).all()) > 0
+
+    def delete_user_from_party(self, user_id, party_id, session):
+        result = session.query(Party).filter(Party.user_id == user_id, Party.party_id == party_id)
+        result.delete()
+    
+    def grant_host(self, user_id, party_id, session):
+        party_rows = session.query(Party).filter(Party.party_id == party_id).all()
+        for row in party_rows:
+            row.host = user_id
 
 Base = declarative_base()
 
