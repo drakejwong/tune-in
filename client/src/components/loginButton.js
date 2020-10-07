@@ -5,7 +5,7 @@ import {
     Button,
 } from "reactstrap";
 
-import { AUTH_LINK } from '../constants';
+//import { AUTH_LINK } from '../constants';
   
 class LoginButton extends React.Component {
 

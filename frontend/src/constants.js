@@ -1,0 +1,1 @@
+export const AUTH_LINK = "http://localhost:8888";

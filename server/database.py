@@ -8,9 +8,9 @@ import psycopg2
 import datetime
 import creds
 
-SERVER = 'localhost:5432'
-DATABASE = 'tune_in'
-USERNAME = 'postgres'
+SERVER = 'ec2-52-1-95-247.compute-1.amazonaws.com'
+DATABASE = 'd5590mmicjpgm0'
+USERNAME = 'bhjuosaogvrhfz'
 PASSWORD = creds.PASSWORD
 DATABASE_CONNECTION = f'postgresql+psycopg2://{USERNAME}:{PASSWORD}@{SERVER}/{DATABASE}'
 
@@ -53,24 +53,34 @@ class Database():
 
     def save_user_tops(self, user_id, top_tracks_all_terms, top_artists_all_terms, session, update=False):
         num_terms = len(top_tracks_all_terms)
-        num_tracks_per_term = len(top_tracks_all_terms[0])
-        assert num_terms == 3, num_tracks_per_term == 50
-
+        #num_tracks_per_term = len(top_tracks_all_terms[0])
+        assert num_terms == 3 #, num_tracks_per_term == 50
+        
         track_objects = []
         artist_objects = []
-        
-        for i in range(num_tracks_per_term):
+
+
+        for i in range(50):
             
             ith_ranked_tracks_per_term = []
             ith_ranked_artists_per_term = []
             
             for term in range(num_terms):
-                track_item = top_tracks_all_terms[term][i]
-                track_uri = track_item['uri']
+
+                tracks_term = top_tracks_all_terms[term]
+                if i < len(tracks_term):
+                    track_item = tracks_term[i]
+                    track_uri = track_item['uri']
+                else: 
+                    track_uri = "None"
                 ith_ranked_tracks_per_term.append(track_uri)
 
-                artist_item = top_artists_all_terms[term][i]
-                artist_uri = artist_item['uri']
+                artists_term = top_artists_all_terms[term]
+                if i < len(artists_term):
+                    artist_item = artists_term[i]
+                    artist_uri = artist_item['uri']
+                else:
+                    artist_uri = "None"
                 ith_ranked_artists_per_term.append(artist_uri)
             
             if update:
@@ -78,7 +88,7 @@ class Database():
                 artist_objects.append({'b_user_id': user_id, 'b_rank': i+1, 'b_short_term': ith_ranked_artists_per_term[0], 'b_medium_term': ith_ranked_artists_per_term[1], 'b_long_term': ith_ranked_artists_per_term[2]})
             else:
                 track_objects.append(TopTracks(user_id=user_id, rank=i+1, short_term=ith_ranked_tracks_per_term[0], medium_term=ith_ranked_tracks_per_term[1], long_term=ith_ranked_tracks_per_term[2]))
-                artist_objects.append(TopArtists(user_id=user_id, rank=i+1, short_term=ith_ranked_artists_per_term[0], medium_term=ith_ranked_artists_per_term[1], long_term=ith_ranked_artists_per_term[2]))      
+                artist_objects.append(TopArtists(user_id=user_id, rank=i+1, short_term=ith_ranked_artists_per_term[0], medium_term=ith_ranked_artists_per_term[1], long_term=ith_ranked_artists_per_term[2]))     
 
         if update:
             self.update_user_data(track_objects, TopTracks, session)
@@ -131,8 +141,8 @@ class Database():
         party_id, host, date_created = session.query(Party.party_id, Party.host, Party.date_created).filter(Party.party_id == party_id).first()
         session.add(Party(party_id=party_id, host=host, user_id=user_id, date_created=date_created))
     
-    def create_party(self, user_id, session):
-        session.add(Party(host=user_id, user_id=user_id))
+    def create_party(self, party_name, user_id, session):
+        session.add(Party(party_id=party_name, host=user_id, user_id=user_id))
     
     def get_party_users(self, party_id, session):
         row = session.query(Party.user_id).filter(Party.party_id == party_id).all()
@@ -177,7 +187,7 @@ Base = declarative_base()
 class Users(Base):
     __tablename__ = 'users'
     t_id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
+    user_id = Column(String)
     display_name = Column(String)
     profile_picture = Column(String)
     account_created_at = Column(DateTime, default=datetime.datetime.utcnow)
@@ -189,11 +199,11 @@ class Users(Base):
 class TopArtists(Base):
     __tablename__ = 'top_artists'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
+    user_id = Column(String)
     rank = Column(Integer)
-    short_term = Column(Integer)
-    medium_term = Column(Integer)
-    long_term = Column(Integer)
+    short_term = Column(String)
+    medium_term = Column(String)
+    long_term = Column(String)
 
     def __repr__(self):
         return "<TopArtists(user_id='%s', rank='%s', short_term='%s', medium_term='%s', long_term='%s')>" % (self.user_id, self.rank, self.short_term, self.medium_term, self.long_term)
@@ -201,11 +211,11 @@ class TopArtists(Base):
 class TopTracks(Base):
     __tablename__ = 'top_tracks'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer)
+    user_id = Column(String)
     rank = Column(Integer)
-    short_term = Column(Integer)
-    medium_term = Column(Integer)
-    long_term = Column(Integer)
+    short_term = Column(String)
+    medium_term = Column(String)
+    long_term = Column(String)
 
     def __repr__(self):
         return "<TopTracks(user_id='%s', rank='%s', short_term='%s', medium_term='%s', long_term='%s')>" % (self.user_id, self.rank, self.short_term, self.medium_term, self.long_term)
@@ -213,9 +223,9 @@ class TopTracks(Base):
 class Party(Base):
     __tablename__ = 'party'
     id = Column(Integer, primary_key=True)
-    party_id = Column(String, default=generate_slug(3))
-    host = Column(Integer) # user_id, host privileges: deleting party, kick members, invite members
-    user_id = Column(Integer)
+    party_id = Column(String)
+    host = Column(String) # user_id, host privileges: deleting party, kick members, invite members
+    user_id = Column(String)
     date_created = Column(DateTime, default=datetime.datetime.utcnow)
     date_joined = Column(DateTime, default=datetime.datetime.utcnow)
 

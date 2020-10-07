@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import TopBar from './components/TopBar';
-import LoginButton from './components/loginButton';
+import LoginButton from './components/LoginButton';
 import Info from './components/Info';
 
 import {
@@ -14,8 +14,8 @@ import {
 
 
 class App extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     // const params = this.getHashParams();
     // const token = params.access_token;
     // if (token) {
@@ -178,7 +178,7 @@ then validate login on frontend and offer the table dom.
                   </Row>
                 </Container>
                 <br />
-                <a href='http://localhost:5000' > <LoginButton msg="Log In To Spotify Now, CMON!!!!"/> </a>
+                <div> <LoginButton msg="Log In To Spotify Now, CMON!!!!"/> </div>
               </div>
             }
           </div>
