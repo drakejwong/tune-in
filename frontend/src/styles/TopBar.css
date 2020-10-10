@@ -1,0 +1,11 @@
+.tuneinnav {
+    padding-left: 5% !important;
+    padding-right: 5% !important;
+}
+.topBar {
+    background: transparent;
+    border-bottom:2px dashed transparent;
+    padding-bottom:10px;
+    background-image: linear-gradient(45deg,  #007bff 0%, #dbd5d6 100%);
+
+}

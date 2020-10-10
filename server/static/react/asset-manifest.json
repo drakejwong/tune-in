@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "./css/main.908af5eb.chunk.css",
+    "main.js": "./js/main.02b36cad.chunk.js",
+    "main.js.map": "./js/main.02b36cad.chunk.js.map",
+    "runtime-main.js": "./js/runtime-main.37218632.js",
+    "runtime-main.js.map": "./js/runtime-main.37218632.js.map",
+    "css/2.d3cd5ad4.chunk.css": "./css/2.d3cd5ad4.chunk.css",
+    "js/2.d8da3cd4.chunk.js": "./js/2.d8da3cd4.chunk.js",
+    "js/2.d8da3cd4.chunk.js.map": "./js/2.d8da3cd4.chunk.js.map",
+    "../../templates/index.html": "./../../templates/index.html",
+    "css/2.d3cd5ad4.chunk.css.map": "./css/2.d3cd5ad4.chunk.css.map",
+    "css/main.908af5eb.chunk.css.map": "./css/main.908af5eb.chunk.css.map",
+    "js/2.d8da3cd4.chunk.js.LICENSE.txt": "./js/2.d8da3cd4.chunk.js.LICENSE.txt",
+    "media/blk-design-system-react.scss": "./media/square5.ff004a0e.png",
+    "media/nucleo-icons.css": "./media/nucleo.f0b489a5.woff",
+    "precache-manifest.fb2ed96f9a4fe7a6e86406a678d54571.js": "./precache-manifest.fb2ed96f9a4fe7a6e86406a678d54571.js",
+    "service-worker.js": "./service-worker.js"
+  },
+  "entrypoints": [
+    "js/runtime-main.37218632.js",
+    "css/2.d3cd5ad4.chunk.css",
+    "js/2.d8da3cd4.chunk.js",
+    "css/main.908af5eb.chunk.css",
+    "js/main.02b36cad.chunk.js"
+  ]
+}
