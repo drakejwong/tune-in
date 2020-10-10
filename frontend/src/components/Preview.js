@@ -60,7 +60,7 @@ export default class Preview extends Component {
             {cardInfo.map((card) => this.generateCard(card))}
         </section>
         
-        <h1> Playlist Link: <a href={playlistLink}> {playlistLink}</a></h1>
+        <h1> Playlist Link: <a rel="noopener noreferrer" target="_blank" href={playlistLink}> {playlistLink}</a></h1>
         
         
 
