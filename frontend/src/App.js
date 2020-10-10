@@ -7,63 +7,11 @@ import PropTypes from 'prop-types'
 
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
+import Preview from "./components/Preview";
 
 export default class App extends Component {
   constructor() {
     super();
-
-    /*this.state = {
-      loggedInStatus: "NOT_LOGGED_IN",
-      user: {}
-    };
-
-    this.handleLogin = this.handleLogin.bind(this);
-    this.handleLogout = this.handleLogout.bind(this);
-  }*/
-
-  /*checkLoginStatus() {
-    axios
-      .get("http://localhost:3001/logged_in", { withCredentials: true })
-      .then(response => {
-        if (
-          response.data.logged_in &&
-          this.state.loggedInStatus === "NOT_LOGGED_IN"
-        ) {
-          this.setState({
-            loggedInStatus: "LOGGED_IN",
-            user: response.data.user
-          });
-        } else if (
-          !response.data.logged_in &
-          (this.state.loggedInStatus === "LOGGED_IN")
-        ) {
-          this.setState({
-            loggedInStatus: "NOT_LOGGED_IN",
-            user: {}
-          });
-        }
-      })
-      .catch(error => {
-        console.log("check login error", error);
-      });
-  }
-
-  componentDidMount() {
-    this.checkLoginStatus();
-  }
-
-  handleLogout() {
-    this.setState({
-      loggedInStatus: "NOT_LOGGED_IN",
-      user: {}
-    });
-  }
-
-  handleLogin(data) {
-    this.setState({
-      loggedInStatus: "LOGGED_IN",
-      user: data.user
-    });*/
   }
 
   render() {
@@ -84,9 +32,18 @@ export default class App extends Component {
             />
             <Route
               exact
-              path={"/dashboard"}
+              path={"/partytime"}
               render={props => (
                 <Dashboard
+                  {...props}
+                />
+              )}
+            />
+             <Route
+              exact
+              path={"/preview"}
+              render={props => (
+                <Preview
                   {...props}
                 />
               )}
