@@ -93,11 +93,9 @@ def party_joining_helper(user_id, party_id, db, session):
             return "You're already in this party!"
         else:
             db.add_to_party(user_id, party_id, session)
-            
             return "Joined Successfully!"
-
-
-#next step: once someone joins, generate the shared playlist so the find_party_playlist just has to lookup the party name to return their playlist
+    else: 
+        return "This party doesn't exist!"
 
 @app.route('/api/find', methods = ['POST'])
 def find_party_playlist():
@@ -114,32 +112,21 @@ def party_finding_helper(user_id, party_id, db, session):
             playlist = preview_party_playlist(party_id)
             playlist_name = save_party_playlist(party_id)
             playlist_link = get_playlist_link(playlist_name)
-            return playlist_link
-
-@app.route("/")
-def login_redirect():
-    db = Database()
-    with session_scope(db) as session:
-        update_user_data(db, session)
-    namez = [tt["name"] + ' - ' + tt['artists'][0]["name"] for term in top_tracks_all_terms for tt in term]
-    artz = [ta["name"] for term in top_artists_all_terms for ta in term]
-    return flask.render_template("index.html", trax=namez, art=artz)
-
-@app.route("/party/<party_id>") # we provide invite link, which is unique to every party
-def party_invite(party_id):
-    db = Database()
-    with session_scope(db) as session:
-        update_user_data(db, session)
-        if not db.user_exists_in_party(user_id, party_id, session):
-            db.add_to_party(user_id, party_id, session)
+            return json.dumps({'playlistLink': playlist_link, 'cardInfo': scrape_tracks(playlist['tracks'], 7)})
+        else: 
+            return "Hey! You're not in this party!"
+    else:
+        return "This party doesn't exist!"
+     
+def scrape_tracks(tracks, num_to_scrape):
+    return [get_track_card_info(track) for track in tracks[0:num_to_scrape+1]]
     
-    # on click
-    results = preview_party_playlist()
-    namez = [track["name"] + ' - ' + track['artists'][0]["name"] for track in results['tracks']]
-    return flask.render_template("index.html", trax=namez)
-    
-    # save_party_playlist()
-    # return 'issa party' # party page
+def get_track_card_info(track_obj): 
+    song_name = track_obj['name']
+    artist = track_obj['artists'][0]['name']
+    track_image = track_obj['album']['images'][0]['url']
+    song_url = track_obj["external_urls"]["spotify"]
+    return [song_name, artist, track_image, song_url]
 
 def update_user_data(user_id, db, session):
     # user_id = '696969'
@@ -193,6 +180,32 @@ def get_playlist_link(playlist_id):
     playlist_link = spotify_obj.playlist(playlist_id, fields = "external_urls")
     return playlist_link["external_urls"]["spotify"]
 
+"""
+@app.route("/")
+def login_redirect():
+    db = Database()
+    with session_scope(db) as session:
+        update_user_data(db, session)
+    namez = [tt["name"] + ' - ' + tt['artists'][0]["name"] for term in top_tracks_all_terms for tt in term]
+    artz = [ta["name"] for term in top_artists_all_terms for ta in term]
+    return flask.render_template("index.html", trax=namez, art=artz)
+
+@app.route("/party/<party_id>") # we provide invite link, which is unique to every party
+def party_invite(party_id):
+    db = Database()
+    with session_scope(db) as session:
+        update_user_data(db, session)
+        if not db.user_exists_in_party(user_id, party_id, session):
+            db.add_to_party(user_id, party_id, session)
+    
+    # on click
+    results = preview_party_playlist()
+    namez = [track["name"] + ' - ' + track['artists'][0]["name"] for track in results['tracks']]
+    return flask.render_template("index.html", trax=namez)
+    
+    # save_party_playlist()
+    # return 'issa party' # party page
+
 def fetch_party_id_from_url():
     url = request.path
     tag = '/party/'
@@ -215,6 +228,6 @@ def leave_party(): # on click
         else:
             db.delete_user_from_party(user_id, party_id, session)
     # redirect to homepage or party directory
-
+"""
 if __name__ == "__main__":    
     app.run(debug=True)
